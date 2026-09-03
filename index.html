@@ -293,7 +293,6 @@
     transition: max-height 0.4s ease, margin-top 0.4s ease;
   }
   .planet-card.open .planet-body{
-    max-height: 320px;
     margin-top: 18px;
   }
   .planet-body p{
@@ -354,6 +353,19 @@
     font-weight: 300;
     max-width: 560px;
   }
+  .station-examples{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .station-example{
+    font-size: 12px;
+    color: var(--gold-dim);
+    border: 1px solid var(--line);
+    padding: 5px 12px;
+    letter-spacing: 0.02em;
+  }
 
   /* ===== COMING SOON (character / gallery) ===== */
   .soon-grid{
@@ -390,11 +402,36 @@
   }
 
   @media (max-width: 720px){
-    section{ padding: 80px 20px; }
+    section{ padding: 64px 20px; }
     .world-grid{ grid-template-columns: 1fr; }
-    .station-row{ grid-template-columns: 1fr; gap: 8px; }
+    .station-row{ grid-template-columns: 1fr; gap: 10px; }
     .soon-grid{ grid-template-columns: 1fr; }
-    .hero h1{ font-size: 72px; }
+    .hero{ padding: 100px 20px 40px; min-height: 100vh; }
+    .hero h1{ font-size: 56px; letter-spacing: 0.03em; }
+    .hero-sub{ font-size: 15px; padding: 0 8px; }
+    .hero-eyebrow{ font-size: 11px; letter-spacing: 0.24em; }
+    .navbar{
+      position: static;
+      transform: none;
+      order: -1;
+      margin-bottom: 56px;
+      width: 100%;
+      animation: fadeIn 1.2s ease forwards 0.3s;
+    }
+    .hero-scroll{ display:none; }
+    .sec-head h2{ font-size: 30px; }
+    .sec-head p{ font-size: 14px; }
+    .planet-grid{ grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .planet-card{ padding: 18px 14px; }
+    .planet-name{ font-size: 18px; }
+    .planet-body p{ font-size: 12.5px; }
+    .soon-box{ padding: 48px 20px; }
+    .station-example{ font-size: 11px; padding: 4px 10px; }
+  }
+
+  @media (max-width: 420px){
+    .planet-grid{ grid-template-columns: 1fr 1fr; }
+    .hero h1{ font-size: 46px; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -536,19 +573,42 @@
     <div class="station-list">
       <div class="station-row">
         <div class="station-type">쉼터</div>
-        <div class="station-desc">긴 항해 끝에 잠시 머무는 곳. 여행자들이 숨을 돌리고, 다음 목적지를 정한다.</div>
+        <div>
+          <div class="station-desc">긴 항해 끝에 잠시 머무는 곳. 여행자들이 숨을 돌리고, 다음 목적지를 정한다. 가벼운 음식과 잠자리, 우주선 충전까지 가능한 고속도로 휴게소 같은 공간. 가장 가까운 행성의 이름을 따서 불린다.</div>
+          <div class="station-examples">
+            <span class="station-example">지구 쉼터</span>
+            <span class="station-example">드리미아 쉼터</span>
+            <span class="station-example">네바리스 쉼터</span>
+          </div>
+        </div>
       </div>
       <div class="station-row">
         <div class="station-type">상업 시설</div>
-        <div class="station-desc">여러 행성의 물건이 오가는 거대한 시장. 필요한 건 대부분 이곳에서 구할 수 있다.</div>
+        <div>
+          <div class="station-desc">여러 행성의 물건이 오가는 거대한 시장. 필요한 건 대부분 이곳에서 구할 수 있다.</div>
+          <div class="station-examples">
+            <span class="station-example">은하 상회</span>
+          </div>
+        </div>
       </div>
       <div class="station-row">
         <div class="station-type">기지</div>
-        <div class="station-desc">특정 목적을 수행하기 위해 세워진 시설. 연구, 감시, 방어 등 저마다의 임무를 가진다.</div>
+        <div>
+          <div class="station-desc">특정 목적을 수행하기 위해 세워진 시설. 치안, 행정 등 저마다의 임무를 가진다.</div>
+          <div class="station-examples">
+            <span class="station-example">우주 경찰서</span>
+            <span class="station-example">항성 연합 관리소</span>
+          </div>
+        </div>
       </div>
       <div class="station-row">
         <div class="station-type">특수 시설</div>
-        <div class="station-desc">단 하나의 기능에 특화된 공간. 존재 자체가 그 정거장의 정체성이 된다.</div>
+        <div>
+          <div class="station-desc">단 하나의 기능에 특화된 공간. 정거장 자체의 유지보수를 전담하며, 외부 수리까지 도맡는다.</div>
+          <div class="station-examples">
+            <span class="station-example">정비창</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -622,10 +682,18 @@
   requestAnimationFrame(draw);
   window.addEventListener('resize', ()=>{ resize(); makeStars(); });
 
-  // Planet accordion
+  // Planet accordion — height matches content exactly
   document.querySelectorAll('.planet-card[data-planet]').forEach(card=>{
+    const body = card.querySelector('.planet-body');
     card.addEventListener('click', ()=>{
-      card.classList.toggle('open');
+      const isOpen = card.classList.contains('open');
+      if(isOpen){
+        body.style.maxHeight = null;
+        card.classList.remove('open');
+      } else {
+        card.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
     });
   });
 </script>
